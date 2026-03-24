@@ -318,12 +318,13 @@ def ai_draft():
 # ─────────────────────────────────────────────────────────────────────────────
 def _load_index_html():
     import glob, base64 as _b64
+    # Try assembled parts first (for Railway deployment)
     parts_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'html_parts')
     if os.path.isdir(parts_dir):
         parts = sorted(glob.glob(os.path.join(parts_dir, 'part_*.txt')))
         if parts:
-            b64 = ''.join(open(p).read().strip() for p in parts)
-            return _b64.b64decode(b64.encode())
+            b64 = b''.join(open(p, 'rb').read().strip() for p in parts)
+            return _b64.b64decode(b64)
     return None
 
 @app.route('/')
