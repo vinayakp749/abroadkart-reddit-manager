@@ -316,8 +316,21 @@ def ai_draft():
 # ─────────────────────────────────────────────────────────────────────────────
 # SERVE FRONTEND (index.html from same folder)
 # ─────────────────────────────────────────────────────────────────────────────
+def _load_index_html():
+    import glob, base64 as _b64
+    parts_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'html_parts')
+    if os.path.isdir(parts_dir):
+        parts = sorted(glob.glob(os.path.join(parts_dir, 'part_*.txt')))
+        if parts:
+            b64 = ''.join(open(p).read().strip() for p in parts)
+            return _b64.b64decode(b64.encode())
+    return None
+
 @app.route('/')
 def index():
+    html = _load_index_html()
+    if html:
+        return Response(html, mimetype='text/html')
     if os.path.exists(os.path.join(app.static_folder, 'index.html')):
         return send_from_directory(app.static_folder, 'index.html')
     return (
